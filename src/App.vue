@@ -1,9 +1,12 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-      <toolbar/>
-      <router-view />
+  <q-layout view="hHh lpr lff">
+    <toolbar/>
+    <q-page-container>      
+         
+          <router-view />          
+        
     </q-page-container>
+  
   </q-layout>
 </template>
 
@@ -19,5 +22,3 @@ export default {
 }
 </script>
 
-<style>
-</style>

@@ -6,12 +6,14 @@ import '@quasar/extras/roboto-font/roboto-font.css'
 import '@quasar/extras/material-icons/material-icons.css'
 import '@quasar/extras/mdi-v3/mdi-v3.css'
 import {
-  Quasar, 
+  Quasar,
+  Notify, 
   QLayout,
   QHeader,
   QDrawer,
   QPageContainer,
   QPage,
+  QPageSticky,
   QToolbar,
   QToolbarTitle,
   QBtn,
@@ -22,12 +24,21 @@ import {
   QItemLabel,
   QForm,
   QInput,
-  QToggle
+  QToggle,
+  QFab,
+  QFabAction,
+  QTime,
+  QPopupProxy,
+  QDate,
+  QDialog,
+  QCard,
+  QCardSection,
+  QCardActions
 } from 'quasar'
 
 Vue.use(Quasar, {
   
-  config: {},
+  config: {notify: { /* Notify defaults */ }},
   components: {    
     QLayout,
     QForm,
@@ -35,6 +46,7 @@ Vue.use(Quasar, {
     QDrawer,
     QPageContainer,
     QPage,
+    QPageSticky,
     QToolbar,
     QToolbarTitle,
     QBtn,
@@ -44,11 +56,21 @@ Vue.use(Quasar, {
     QItemSection,
     QItemLabel,
     QToggle,
-    QInput
+    QInput,
+    QFab,
+    QFabAction,
+    QTime,
+    QPopupProxy,
+    QDate,
+    QDialog,
+    QCard,
+    QCardActions,
+    QCardSection
   },  
   directives: {
   },
   plugins: {
+    Notify  
   },
   lang: lang
  })

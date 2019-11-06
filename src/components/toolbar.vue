@@ -1,5 +1,5 @@
 <template>
-  <q-page fixed>
+  <div>
     <q-header elevated class="glossy">
       <q-toolbar>
         <q-btn
@@ -8,17 +8,37 @@
           round
           size="xl"
           class="absolute-center"
+          @click.native="Set_dialog()"
         />
         <q-toolbar-title>
           Quasar App
         </q-toolbar-title>
       </q-toolbar>
-    </q-header>   
-  </q-page>
+    </q-header>
+    <neuer :dialog="dialog"/>    
+          
+ </div>
 </template>
 
 <script>
+import neuer from '@/components/NeuerEintrag.vue'
 export default {
+  components:{neuer},
+  data(){
+    return{
+      
+    }
+  },
+  computed:{
+    dialog(){
+          return this.$store.getters.dialog_NEUER
+        }
+  },
+  methods:{
+    Set_dialog(){
+      this.$store.commit('SET_dialog_NEUER',true)
+    }
+  }
   
 }
 </script>
