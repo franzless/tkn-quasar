@@ -28,19 +28,24 @@ export default new Vuex.Store({
     },
     SET_ITEMS:(state,payload)=>{
       if(payload.length>0){
+        //Alle vorhandenen Datums in ein array schreiben
       var dates = payload.map(m=>m.datum).filter((value, index, self)=>{return self.indexOf(value) === index;})
-      console.log(dates)      
+      //über jedes Datum iterrieren     
       for(var x = 0;x<dates.length;x++){
+        //alle Objekte mit dem entsprechenden Datum in Variable Cache schreiben
         var cache = []
         cache = payload.filter(f => f.datum === dates[x])
+        //benötigte Datenstruktur zusammenbauen => var daten
         var daten = []        
-        cache.forEach(c=>daten.push(c.daten))               
-        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].uid,daten}
-        console.log(result)
+        cache.forEach(c=>daten.push(c.daten))
+        //Sortieren, falls mehrere Einträge pro Datum
+        daten.sort(function(a,b){return a.beginn.slice(0,2) -b.beginn.slice(0,2) })
+        //fertiges Objekt pushen               
+        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].uid,daten}        
         state.items.push(result)
     }}else{
-      state.items= payload
-  }console.log(state.items)}
+      state.items= []
+  }}
   },
   getters:{
     dialog_NEUER:state=>{
@@ -91,8 +96,7 @@ export default new Vuex.Store({
       })  */
         context.commit('SET_LOADING',true)
       docRef.add(payload)
-      .then(response=>{
-        console.log(response)        
+      .then(response=>{            
        context.commit('SET_dialog_NEUER',false)
        context.commit('SET_LOADING',false)
        context.commit('SET_SNACK',{snackColor:'success',status:true,snackText:'Erfolg'})

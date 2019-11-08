@@ -8,12 +8,14 @@
         </q-card-section>
         <q-card-section>    
         <q-form
-      @submit="onSubmit"
-      @reset="onReset" 
-      greedy                 
-      class="q-gutter-md"
+          ref="myForm"
+          @submit="onSubmit"
+          @reset="onReset" 
+          greedy                 
+          class="q-gutter-md"
     >
-    <q-input filled v-model="DateFormatted" mask="date" :rules="['date']">
+    <q-input filled v-model="DateFormatted" label="Datum" :rules="[
+          val => val !== null && val !== '' || 'Bitte Datum eintragen']">
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -56,7 +58,7 @@
 
       <q-input filled v-model="pause" label="Pause" hint="in Minuten" :rules="[
           val => val !== null && val !== '' || 'Bitte Pause eintragen',
-          val => val > 0 && val < 100 || 'Ungültiger Wert'
+          val => val >= 0 && val < 100 || 'Ungültiger Wert'
         ]">
         <template v-slot:before>
           <q-icon name="schedule" />
@@ -98,8 +100,7 @@ export default {
     return {
       beginn:'',
       ende:'',
-      pause:'',
-      accept: false,
+      pause:'',      
       datum:'',
       comment:'',
            
@@ -121,31 +122,35 @@ export default {
     methods:{
         close(){
              this.$store.commit('SET_dialog_NEUER',false)
+             this.onReset()
         },       
         onSubmit () {
-      if (this.accept !== true) {
-        this.$q.notify({
-          color: 'red-5',
-          textColor: 'white',
-          icon: 'warning',
-          message: 'You need to accept the license and terms first'
-        })
-      }
-      else {
-        this.$q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'cloud_done',
-          message: 'Submitted'
-        })
-      }
-    },
+          var unix = moment(this.datum, "YYYY/MM/DD").unix()
+          this.$refs.myForm.validate().then(success => {
+            if (success) {                            
+            this.$store.dispatch('SET_NEUER_EINTRAG',{datum:this.DateFormatted,unix:unix,UID:'u66WmdRu57bAdn4nTWg9bvCPdcZ2',daten:{pause:this.pause,kommentar:this.comment,beginn:this.beginn,ende:this.ende}})
+              this.$q.notify({
+                color: 'green-4',
+                textColor: 'white',
+                icon: 'cloud_done',
+                message: 'Submitted'
+              })}
+            else {
+               this.$q.notify({
+                color: 'red-5',
+                textColor: 'white',
+                icon: 'warning',
+                message: 'You need to accept the license and terms first'
+        })}
+        })},
 
-    onReset () {
-      this.name = null
-      this.age = null
-      this.accept = false
-    }  
+        onReset () {
+          this.datum = ''
+          this.beginn = ''
+          this.pause = null
+          this.ende = '',
+          this.comment=''
+        }  
           
 }}
 </script>

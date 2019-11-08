@@ -33,7 +33,9 @@ import {
   QDialog,
   QCard,
   QCardSection,
-  QCardActions
+  QCardActions,
+  QTimeline,
+  QTimelineEntry
 } from 'quasar'
 
 Vue.use(Quasar, {
@@ -65,7 +67,9 @@ Vue.use(Quasar, {
     QDialog,
     QCard,
     QCardActions,
-    QCardSection
+    QCardSection,
+    QTimeline,
+    QTimelineEntry
   },  
   directives: {
   },

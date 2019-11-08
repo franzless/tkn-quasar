@@ -9,10 +9,17 @@
           size="xl"
           class="absolute-center"
           @click.native="Set_dialog()"
-        />
+        />         
         <q-toolbar-title>
-          Quasar App
+          Bechtle
         </q-toolbar-title>
+        <q-btn
+          icon="timeline"
+          flat          
+          round
+          size="lg"          
+          :to="'/timeline'"
+        />
       </q-toolbar>
     </q-header>
     <neuer :dialog="dialog"/>    
