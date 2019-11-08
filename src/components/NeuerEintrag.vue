@@ -3,8 +3,8 @@
        <q-dialog v-model="dialog" persistent transition-show="flip-down" transition-hide="flip-up">
       <q-card style="min-width: 450px">
         <q-card-section class="text-h6">
-          <q-icon size="md" name="add_circle" color="primary"/>
-          Neuer Eintrag
+          <q-icon size="md" :name="icon" color="primary"/>
+          {{title}}
         </q-card-section>
         <q-card-section>    
         <q-form
@@ -79,7 +79,7 @@
       
 
       <div>
-        <q-btn label="Submit" type="submit" color="primary"/>
+        <q-btn :label="button" type="submit" color="primary"/>
         <q-btn label="Close"  color="primary" @click="close()" flat class="q-ml-sm" />
       </div>
     </q-form>
@@ -95,7 +95,7 @@
 <script>
 var moment = require('moment');
 export default {
-  props:['dialog'],
+  props:['dialog','title','button','icon'],
   data () {
     return {
       beginn:'',

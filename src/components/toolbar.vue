@@ -22,7 +22,7 @@
         />
       </q-toolbar>
     </q-header>
-    <neuer :dialog="dialog"/>    
+    <neuer :dialog="dialog" title="Neuer Eintrag" icon="add_circle" button="submit"/>    
           
  </div>
 </template>

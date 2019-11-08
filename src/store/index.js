@@ -27,6 +27,7 @@ export default new Vuex.Store({
       state.snack=payload
     },
     SET_ITEMS:(state,payload)=>{
+      console.log(payload)
       if(payload.length>0){
         //Alle vorhandenen Datums in ein array schreiben
       var dates = payload.map(m=>m.datum).filter((value, index, self)=>{return self.indexOf(value) === index;})
@@ -41,7 +42,7 @@ export default new Vuex.Store({
         //Sortieren, falls mehrere Einträge pro Datum
         daten.sort(function(a,b){return a.beginn.slice(0,2) -b.beginn.slice(0,2) })
         //fertiges Objekt pushen               
-        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].uid,daten}        
+        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].UID,daten}        
         state.items.push(result)
     }}else{
       state.items= []
@@ -105,12 +106,12 @@ export default new Vuex.Store({
         context.commit('SET_SNACK',{snackColor:'error',status:true,snackText:err})
         console.log(err)}) 
     }, 
-    QUERY_ITEMS:(context)=>{      
-      docRef.where('UID','==','u66WmdRu57bAdn4nTWg9bvCPdcZ2').orderBy("unix","desc").onSnapshot(snap=>{
+    QUERY_ITEMS:(context)=>{
         var daten = []
-        context.commit('SET_ITEMS',daten) 
-        snap.forEach(doc=>{
-           daten.push(doc.data())
+        context.commit('SET_ITEMS',daten)       
+      docRef.where('UID','==','u66WmdRu57bAdn4nTWg9bvCPdcZ2').orderBy("unix","desc").onSnapshot(snap=>{        
+        snap.forEach(doc=>{          
+           daten.push({...doc.data(),...doc.id})
         })
         context.commit('SET_ITEMS',daten)})
     }
