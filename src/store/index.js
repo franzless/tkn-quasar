@@ -9,9 +9,11 @@ export default new Vuex.Store({
   state: {
     dialog_neuer:false,
     data:[],
-    loading:false,
-    snack:{},
-    items:[]
+    loading:false,    
+    items:[],
+    frame:{},
+    neu:{},
+    funktion:''
   },
   mutations: {
     SET_dialog_NEUER:(state,payload)=>{
@@ -22,10 +24,7 @@ export default new Vuex.Store({
     },
     SET_LOADING:(state,payload)=>{
       state.loading = payload
-    },
-    SET_SNACK:(state,payload)=>{
-      state.snack=payload
-    },
+    },    
     SET_ITEMS:(state,payload)=>{
       console.log(payload)
       if(payload.length>0){
@@ -42,11 +41,20 @@ export default new Vuex.Store({
         //Sortieren, falls mehrere Einträge pro Datum
         daten.sort(function(a,b){return a.beginn.slice(0,2) -b.beginn.slice(0,2) })
         //fertiges Objekt pushen               
-        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].UID,daten}        
+        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].UID,daten,id:cache[0].id}        
         state.items.push(result)
     }}else{
       state.items= []
-  }}
+    }},
+    SET_frame:(state,payload)=>{
+    state.frame = payload
+   },
+   SET_neu:(state,payload)=>{
+     state.neu = payload
+   },
+   SET_funktion:(state,payload)=>{
+     state.funktion = payload
+   }
   },
   getters:{
     dialog_NEUER:state=>{
@@ -54,16 +62,53 @@ export default new Vuex.Store({
     },
     get_loading:state=>{
       return state.loading
-    },
-    get_snack:state=>{
-      return state.snack
-    },
+    },   
     get_items:state=>{
       return state.items
+    },
+    frame:state=>{
+      return state.frame
+    },
+    neu:state=>{
+      return state.neu
+    },
+    funktion:state=>{
+      return state.funktion
     }
   },
   actions: {      
-    SET_NEUER_EINTRAG:(context,payload)=>{ 
+    ACTION_EINTRAG:async(context,payload)=>{
+
+
+      var funktion = context.getters.funktion
+      if(funktion === 'add'){
+        funktion = docRef.add(payload)
+      }else{
+         funktion= docRef.doc(payload.id).update(payload)
+        }
+
+
+      return new Promise((resolve,reject)=>{      
+        context.commit('SET_LOADING',true)
+          funktion.then(response=>{ 
+              if(response){                
+                resolve()
+                context.commit('SET_dialog_NEUER',false)
+                context.commit('SET_LOADING',false)
+              }else{
+                reject('Fehler bei der Verarbeitung')}
+          }) 
+          .catch(err=>{
+            reject(err)        
+          })
+        setTimeout(()=>{
+          context.commit('SET_LOADING',false)          
+          reject('Datenbank nicht erreichbar => Timeout')
+        },5000)
+        }) 
+
+    },
+      
   /*      docRef.where("unix","==","1570744800").get().then(doc=>{
         if(doc.exists){          
           var daten_merge = []
@@ -95,26 +140,17 @@ export default new Vuex.Store({
             console.log(err)})
         }
       })  */
-        context.commit('SET_LOADING',true)
-      docRef.add(payload)
-      .then(response=>{            
-       context.commit('SET_dialog_NEUER',false)
-       context.commit('SET_LOADING',false)
-       context.commit('SET_SNACK',{snackColor:'success',status:true,snackText:'Erfolg'})
-      })
-      .catch(err=>{
-        context.commit('SET_SNACK',{snackColor:'error',status:true,snackText:err})
-        console.log(err)}) 
-    }, 
-    QUERY_ITEMS:(context)=>{
+        
+     
+    ACTION_QUERY_ITEMS:(context)=>{
         var daten = []
         context.commit('SET_ITEMS',daten)       
       docRef.where('UID','==','u66WmdRu57bAdn4nTWg9bvCPdcZ2').orderBy("unix","desc").onSnapshot(snap=>{        
         snap.forEach(doc=>{          
-           daten.push({...doc.data(),...doc.id})
+           daten.push({...doc.data(),id:doc.id})
         })
         context.commit('SET_ITEMS',daten)})
-    }
+    },    
   },
   modules: {
   }

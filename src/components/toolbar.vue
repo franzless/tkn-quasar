@@ -8,7 +8,7 @@
           round
           size="xl"
           class="absolute-center"
-          @click.native="Set_dialog()"
+          @click="Set_dialog()"
         />         
         <q-toolbar-title>
           Bechtle
@@ -22,7 +22,7 @@
         />
       </q-toolbar>
     </q-header>
-    <neuer :dialog="dialog" title="Neuer Eintrag" icon="add_circle" button="submit"/>    
+    <neuer :dialog="dialog"/>    
           
  </div>
 </template>
@@ -31,19 +31,15 @@
 import neuer from '@/components/NeuerEintrag.vue'
 export default {
   components:{neuer},
-  data(){
-    return{
-      
-    }
-  },
   computed:{
     dialog(){
           return this.$store.getters.dialog_NEUER
-        }
+        },    
   },
   methods:{
     Set_dialog(){
       this.$store.commit('SET_dialog_NEUER',true)
+      this.$store.commit('SET_frame',{icon:'add_circle',title:'Neuer Eintrag',button:'Submit'})
     }
   }
   

@@ -5,7 +5,7 @@
             <q-card>
                 <q-card-section>
                     <q-list dense>
-                      <q-item v-for="(d,index) in item.daten" :key="index" clickable  @click="edit({datum:item.datum,...d})">                          
+                      <q-item v-for="(d,index) in item.daten" :key="index" clickable  @click="edit({datum:item.datum,...d,id:item.id})">                          
                           <q-item-section no-wrap side>
                               <q-icon size="sm" color="orange" name="schedule"></q-icon>                              
                           </q-item-section> 
@@ -24,22 +24,23 @@
         </q-timeline-entry>        
     
     </q-timeline>
-    <neuer :dialog="dialog" title="Eintrag bearbeiten" icon="build" button="update"/>   
+    <neuer :dialog="dialog"/>   
 </div>
 
 </template>
 <script>
+var moment = require('moment');
 import neuer from '@/components/NeuerEintrag.vue'
 export default {
     components:{neuer},
     data(){
         return{
             AMG:'../assets/AMGlogo.jpg',
-            
+            title:'Eintrag bearbeiten'
         }
     },
     created(){
-        this.$store.dispatch('QUERY_ITEMS')
+        this.$store.dispatch('ACTION_QUERY_ITEMS')       
     },
     computed:{
         items(){
@@ -53,17 +54,22 @@ export default {
             }
         },
         layout () {
-             return this.$q.screen.lt.sm ? 'dense' : (this.$q.screen.lt.md ? 'comfortable' : 'loose')
+           return this.$q.screen.lt.sm ? 'dense' : (this.$q.screen.lt.md ? 'comfortable' : 'loose')
         },
         dialog(){
           return this.$store.getters.dialog_NEUER
-        }
+        },
+        
     },
     methods:{
-        edit(data){
-            this.$store.commit('SET_dialog_NEUER',true)
-            console.log(data)
-        }
+        edit(data){            
+            this.$store.commit('SET_frame',{icon:'build',title:'Eintrag bearbeiten',button:'Update'})
+            this.$store.commit('SET_dialog_NEUER',true)            
+            this.$store.commit('SET_neu',{...data,datum:this.DateFormatted(data.datum)})
+        },
+        DateFormatted(date){ 
+            return date ? moment(date,'DD.MM.YYYY').format('YYYY/MM/DD') : ''
+        }, 
     }}
 </script>
     

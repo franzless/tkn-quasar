@@ -3,23 +3,23 @@
        <q-dialog v-model="dialog" persistent transition-show="flip-down" transition-hide="flip-up">
       <q-card style="min-width: 450px">
         <q-card-section class="text-h6">
-          <q-icon size="md" :name="icon" color="primary"/>
-          {{title}}
+          <q-icon size="sm" :name="frame.icon" color="warning"/>
+          {{frame.title}}
         </q-card-section>
-        <q-card-section>    
-        <q-form
+        <q-card-section>           
+        <q-form          
           ref="myForm"
           @submit="onSubmit"
           @reset="onReset" 
           greedy                 
           class="q-gutter-md"
-    >
+    >     
     <q-input filled v-model="DateFormatted" label="Datum" :rules="[
           val => val !== null && val !== '' || 'Bitte Datum eintragen']">
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-            <q-date today-btn v-model="datum" @input="() => $refs.qDateProxy.hide()" />
+            <q-date today-btn v-model="neu.datum" @input="() => $refs.qDateProxy.hide()" />
           </q-popup-proxy>
         </q-icon>
       </template>
@@ -28,11 +28,11 @@
         </template>
     </q-input>
 
-     <q-input filled v-model="beginn" mask="time" :rules="['time']" label="Beginn" now-btn>
+     <q-input filled v-model="neu.beginn" mask="time" :rules="['time']" label="Beginn" now-btn>
         <template v-slot:append>
           <q-icon name="access_time" class="cursor-pointer">
             <q-popup-proxy transition-show="scale" transition-hide="scale">
-              <q-time v-model="beginn" />
+              <q-time v-model="neu.beginn" />
             </q-popup-proxy>
           </q-icon>
         </template>
@@ -41,12 +41,12 @@
         </template>
       </q-input>
 
-      <q-input filled v-model="ende" mask="time" :rules="['time']" label="Ende" now-btn>
+      <q-input filled v-model="neu.ende" mask="time" :rules="['time']" label="Ende" now-btn>
         <template v-slot:append>
           <q-icon name="access_time" class="cursor-pointer">
             <q-popup-proxy transition-show="scale" transition-hide="scale">
               <q-time
-                v-model="ende"                
+                v-model="neu.ende"                
               />
             </q-popup-proxy>
           </q-icon>
@@ -56,7 +56,7 @@
         </template>
       </q-input>
 
-      <q-input filled v-model="pause" label="Pause" hint="in Minuten" :rules="[
+      <q-input filled v-model="neu.pause" label="Pause" hint="in Minuten" :rules="[
           val => val !== null && val !== '' || 'Bitte Pause eintragen',
           val => val >= 0 && val < 100 || 'Ungültiger Wert'
         ]">
@@ -66,7 +66,7 @@
         </q-input>
 
       <q-input
-          v-model="comment"          
+          v-model="neu.kommentar"          
           filled
           autogrow
           label="Beschreibung/Kommentar"
@@ -79,13 +79,21 @@
       
 
       <div>
-        <q-btn :label="button" type="submit" color="primary"/>
+        <q-btn :label="frame.button" type="submit" color="primary"/>
         <q-btn label="Close"  color="primary" @click="close()" flat class="q-ml-sm" />
       </div>
     </q-form>
        </q-card-section>        
       </q-card>
-    </q-dialog>    
+    </q-dialog>
+    <q-dialog v-model="spinner" persistent class="fullscreen">
+      <q-card>
+        <q-spinner-gears          
+          color="primary"
+          size="20em"
+        />          
+      </q-card>
+      </q-dialog>    
          
             
    
@@ -95,28 +103,27 @@
 <script>
 var moment = require('moment');
 export default {
-  props:['dialog','title','button','icon'],
+  props:['dialog'],
   data () {
     return {
-      beginn:'',
-      ende:'',
-      pause:'',      
-      datum:'',
-      comment:'',
-           
+      spinner:false,
     }
   },  
 
   computed:{
         DateFormatted(){
-            return this.datum ? moment(this.datum).format('DD.MM.YYYY') : ''
+            return this.neu.datum ? moment(this.neu.datum).format('DD.MM.YYYY') : ''
         },
-        loading(){
-            return this.$store.getters.get_loading
+        neu:{
+            set(data){
+              this.$store.commit('SET_neu',data)
         },
-        snack(){
-        return this.$store.getters.get_snack    
-        },
+            get(){
+              return this.$store.getters.neu
+        }},
+        frame(){
+          return this.$store.getters.frame
+        } 
         
     },    
     methods:{
@@ -125,31 +132,47 @@ export default {
              this.onReset()
         },       
         onSubmit () {
-          var unix = moment(this.datum, "YYYY/MM/DD").unix()
+          var action = ''
+          var unix = moment(this.neu.datum, "YYYY/MM/DD").unix()
+          this.spinner =true          
           this.$refs.myForm.validate().then(success => {
-            if (success) {                            
-            this.$store.dispatch('SET_NEUER_EINTRAG',{datum:this.DateFormatted,unix:unix,UID:'u66WmdRu57bAdn4nTWg9bvCPdcZ2',daten:{pause:this.pause,kommentar:this.comment,beginn:this.beginn,ende:this.ende}})
-              this.$q.notify({
-                color: 'green-4',
+            if (success) {
+              if(this.frame.title === 'Neuer Eintrag'){
+                this.$store.commit('SET_funktion','add')                
+                action = this.$store.dispatch('ACTION_EINTRAG',{datum:this.DateFormatted,unix:unix,UID:'u66WmdRu57bAdn4nTWg9bvCPdcZ2',daten:{pause:this.neu.pause,kommentar:this.neu.kommentar,beginn:this.neu.beginn,ende:this.neu.ende}})
+              }
+              else if(this.frame.title  === 'Eintrag bearbeiten'){
+                this.$store.commit('SET_funktion','edit')                
+                action = this.$store.dispatch('ACTION_EINTRAG',{id:this.neu.id,datum:this.DateFormatted,unix:unix,UID:'u66WmdRu57bAdn4nTWg9bvCPdcZ2',daten:{pause:this.neu.pause,kommentar:this.neu.kommentar,beginn:this.neu.beginn,ende:this.neu.ende}})
+              }                            
+            action.then(result=>{
+                this.spinner = false
+                this.$q.notify({
+                color: 'green',
                 textColor: 'white',
                 icon: 'cloud_done',
-                message: 'Submitted'
-              })}
+                message: 'Übertragung erfolgreich'
+              })}).catch(err=>{
+                this.spinner = false
+                this.$q.notify({
+                color: 'red-5',
+                textColor: 'white',
+                icon: 'warning',
+                message: err
+              })})
+              }
             else {
+              this.spinner = false
                this.$q.notify({
                 color: 'red-5',
                 textColor: 'white',
                 icon: 'warning',
-                message: 'You need to accept the license and terms first'
+                message: 'Alle Felder müssen ausgefüllt sein'
         })}
         })},
 
         onReset () {
-          this.datum = ''
-          this.beginn = ''
-          this.pause = null
-          this.ende = '',
-          this.comment=''
+          this.neu = {}
         }  
           
 }}

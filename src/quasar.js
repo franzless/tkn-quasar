@@ -35,7 +35,8 @@ import {
   QCardSection,
   QCardActions,
   QTimeline,
-  QTimelineEntry
+  QTimelineEntry,
+  QSpinnerGears
 } from 'quasar'
 
 Vue.use(Quasar, {
@@ -69,7 +70,8 @@ Vue.use(Quasar, {
     QCardActions,
     QCardSection,
     QTimeline,
-    QTimelineEntry
+    QTimelineEntry,
+    QSpinnerGears
   },  
   directives: {
   },
