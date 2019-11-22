@@ -1,18 +1,18 @@
 <template>
 <div class="q-px-xl" >
-    <q-timeline :layout="layout">           
-        <q-timeline-entry  v-for="(item,index) in items" :key="index" :subtitle="item.datum" :side="index % 2 == 0 ? 'left' : 'right'">
+    <q-timeline :layout="layout">                
+        <q-timeline-entry v-for="(item,index) in items" icon="cloud_done" :key="index" class="text-subtitle1" :title="item.datum" :side="index % 2 == 0 ? 'left' : 'right'">
             <q-card>
                 <q-card-section>
                     <q-list dense>
                       <q-item v-for="(d,index) in item.daten" :key="index" clickable  @click="edit({datum:item.datum,...d,id:item.id})">                          
                           <q-item-section no-wrap side>
-                              <q-icon size="sm" color="orange" name="schedule"></q-icon>                              
+                              <q-icon size="sm" color="secondary" name="schedule"></q-icon>                              
                           </q-item-section> 
                           <q-item-section side>
-                              <div>{{d.beginn}} -   {{d.ende}}Uhr</div>
-                              </q-item-section>                        
-                          <q-item-section>
+                              <div>{{d.beginn}} - {{d.ende}}Uhr</div>
+                          </q-item-section>                        
+                          <q-item-section class="text-grey">
                               {{d.kommentar}}
                               
                           </q-item-section>                                                 

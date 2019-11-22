@@ -1,24 +1,33 @@
 <template>
   <div>
     <q-header elevated class="glossy">
-      <q-toolbar>
+      <q-toolbar class="bg-white glossy shadow-9">
         <q-btn
           icon="add_circle"
-          flat          
+          color="primary"          
           round
           size="xl"
           class="absolute-center"
           @click="Set_dialog()"
         />         
-        <q-toolbar-title>
+        <q-toolbar-title class="text-primary">
           Bechtle
         </q-toolbar-title>
         <q-btn
           icon="timeline"
+          color="primary"
           flat          
           round
           size="lg"          
           :to="'/timeline'"
+        />
+         <q-btn
+          icon="bar_chart"
+          color="primary"
+          flat          
+          round
+          size="lg"          
+          :to="'/charts'"
         />
       </q-toolbar>
     </q-header>

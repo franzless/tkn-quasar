@@ -41,7 +41,9 @@ import {
 
 Vue.use(Quasar, {
   
-  config: {notify: { /* Notify defaults */ }},
+  config: {
+  notify: { /* Notify defaults */ },
+  dark: true},
   components: {    
     QLayout,
     QForm,

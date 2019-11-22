@@ -1,12 +1,16 @@
 <template>
-    <div class="q-pa-xl">
-       <apexchart width="700" type="bar" :options="chartOptions" :series="series"></apexchart> 
+    <div class="q-pa-xl, row" dark>
+        <!-- <div class="col-xs-12 col-md-6"> <apexchart  type="bar" :options="chartOptions" :series="series"></apexchart></div> -->
+        <div class="col-xs-12 col-md-6"><apexchart  type=radialBar :options="radialOptions" :series="radialseries"></apexchart></div>
+           
     </div>
 </template>
 <script>
 export default {
+    
     data(){
         return{
+            daten:[{krank:false},{krank:true}],
             chartOptions:{
                 xaxis:{
                     categories:[]
@@ -15,12 +19,24 @@ export default {
             series:[{
                 name:'Dauer',
                 data:[]
-            }]
+            }],
+            radialOptions:{                
+                 plotOptions: {
+            radialBar: {
+              hollow: {
+                size: '70%',
+              }
+            },
+          },
+          labels:[]
+            },
+            radialseries:[]
         }
     },
-    async mounted(){
-        await this.$store.dispatch('QUERY_ITEMS')
-        this.constructData(this.data)
+    created(){
+        this.constructData(this.data)        
+        this.constructTagekrank()            
+        
     },
     computed:{
         data(){
@@ -56,7 +72,25 @@ export default {
             })
                       
              
-        }
-    }
+        },
+        async constructTagekrank(){
+            
+            await this.$store.dispatch('ACTION_QUERY_ITEMS')
+            
+            var AnzahlTage = this.data.length
+            //console.log(this.data)
+            var Tagekrank = this.data.filter(tag=>tag.krank === true)
+            this.radialseries = []            
+            this.radialseries.push(Tagekrank.length/AnzahlTage)
+            this.radialOptions = {plotOptions: {
+                                        radialBar: {
+                                        hollow: {
+                                            size: '70%',
+                                        }
+                                        },
+                                    },
+                                    labels:['Tage krank 2019: '+Tagekrank.length]}
+                                    }
+                                }
 }
 </script>
