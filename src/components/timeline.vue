@@ -5,17 +5,26 @@
             <q-card>
                 <q-card-section>
                     <q-list dense>
-                      <q-item v-for="(d,index) in item.daten" :key="index" clickable  @click="edit({datum:item.datum,...d,id:item.id})">                          
-                          <q-item-section no-wrap side>
-                              <q-icon size="sm" color="secondary" name="schedule"></q-icon>                              
-                          </q-item-section> 
-                          <q-item-section side>
-                              <div>{{d.beginn}} - {{d.ende}}Uhr</div>
-                          </q-item-section>                        
-                          <q-item-section class="text-grey">
-                              {{d.kommentar}}
-                              
-                          </q-item-section>                                                 
+                      <q-item v-for="(d,index) in item.daten" :key="index" clickable  @click="edit({datum:item.datum,...d,id:item.id})">
+                          
+                            <q-item-section no-wrap side v-if="item.krank === false">
+                                <q-icon size="sm" color="orange" name="schedule"></q-icon>                              
+                            </q-item-section> 
+                            <q-item-section side v-if="item.krank === false">
+                                <div>{{d.beginn}} - {{d.ende}}Uhr</div>
+                            </q-item-section>                        
+                            <q-item-section class="text-grey" v-if="item.krank === false">
+                                {{d.kommentar}}                              
+                            </q-item-section> 
+                          
+                              <q-item-section no-wrap side v-if="item.krank === true">
+                                  <q-icon size="sm" name="local_hotel" color="lime-10"></q-icon>
+                              </q-item-section>
+                               <q-item-section class="text-grey" v-if="item.krank === true">
+                                {{d.kommentar}}                              
+                               </q-item-section> 
+                                                   
+                                                               
                         </q-item>                        
                   </q-list>
                 </q-card-section>

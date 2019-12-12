@@ -25,24 +25,9 @@ export default new Vuex.Store({
     SET_LOADING:(state,payload)=>{
       state.loading = payload
     },    
-    SET_ITEMS:(state,payload)=>{      
-      state.items = []
-        //Alle vorhandenen Datums in ein array schreiben
-      var dates = payload.map(m=>m.datum).filter((value, index, self)=>{return self.indexOf(value) === index;})
-      //über jedes Datum iterrieren     
-      for(var x = 0;x<dates.length;x++){
-        //alle Objekte mit dem entsprechenden Datum in Variable Cache schreiben
-        var cache = []
-        cache = payload.filter(f => f.datum === dates[x])
-        //benötigte Datenstruktur zusammenbauen => var daten
-        var daten = []        
-        cache.forEach(c=>daten.push(c.daten))
-        //Sortieren, falls mehrere Einträge pro Datum
-        daten.sort(function(a,b){return a.beginn.slice(0,2) -b.beginn.slice(0,2) })
-        //fertiges Objekt pushen               
-        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].UID,daten,id:cache[0].id,krank:cache[0].krank}        
-        state.items.push(result)
-    }},
+    SET_ITEMS:(state,payload)=>{            
+      state.items = payload        
+      },
     SET_frame:(state,payload)=>{
     state.frame = payload
    },
@@ -141,13 +126,32 @@ export default new Vuex.Store({
       })  */
         
      
-    ACTION_QUERY_ITEMS:async(context)=>{                     
-     var result =  await docRef.where('UID','==','u66WmdRu57bAdn4nTWg9bvCPdcZ2').orderBy("unix","desc").onSnapshot(snap=>{
-        var daten = []
+    ACTION_QUERY_ITEMS:async(context)=>{
+      
+                        
+        await docRef.where('UID','==','u66WmdRu57bAdn4nTWg9bvCPdcZ2').orderBy("unix","desc").onSnapshot(snap=>{
+          var fetched = []
+          var constructed= []  
         snap.forEach(doc=>{                   
-           daten.push({...doc.data(),id:doc.id})
+           fetched.push({...doc.data(),id:doc.id})
         })
-        context.commit('SET_ITEMS',daten)})
+        //Alle vorhandenen Datums in ein array schreiben
+        var dates = fetched.map(m=>m.datum).filter((value, index, self)=>{return self.indexOf(value) === index;})
+      //über jedes Datum iterrieren     
+      for(var x = 0;x<dates.length;x++){
+        //alle Objekte mit dem entsprechenden Datum in Variable Cache schreiben
+        var cache = []
+        cache = fetched.filter(f => f.datum === dates[x])
+        //benötigte Datenstruktur zusammenbauen => var daten
+        var daten = []        
+        cache.forEach(c=>daten.push(c.daten))
+        //Sortieren, falls mehrere Einträge pro Datum
+        daten.sort(function(a,b){return a.beginn.slice(0,2) -b.beginn.slice(0,2) })
+        //fertiges Objekt pushen               
+        var result = {datum:cache[0].datum,unix:cache[0].unix,UID:cache[0].UID,daten,id:cache[0].id,krank:cache[0].krank}        
+        constructed.push(result)
+    } context.commit('SET_ITEMS',constructed)})        
+       
         
     },    
   },
