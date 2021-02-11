@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
-    "apexcharts": "^3.10.1",
+    "apexcharts": "^3.24.0",
     "core-js": "^3.3.2",
     "firebase": "^7.2.3",
     "moment": "^2.24.0",
